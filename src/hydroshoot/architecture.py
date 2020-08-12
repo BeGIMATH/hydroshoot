@@ -19,8 +19,8 @@ from re import search, findall
 from itertools import product
 from pickle import dump, load
 from os import path, mkdir
-
-
+import numpy
+from six.moves import reduce
 from openalea.mtg import mtg, io
 from openalea.plantgl.all import Point3Array
 import openalea.plantgl.all as pgl
@@ -963,7 +963,7 @@ def vine_leaf(g, vid, leaf_inc=-45., leaf_inc_cv=10., rand_rot_angle=30.,
     - **order_lim_max** and **max_order**: shape parameters
     """
 
-    leaf_inc, rand_rot_angle = [scipy.radians(angle) for angle in leaf_inc, rand_rot_angle]
+    leaf_inc, rand_rot_angle = [numpy.radians(angle) for angle in (leaf_inc, rand_rot_angle)]
 
     if vid > 0:
         n = g.node(vid)

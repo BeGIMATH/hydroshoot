@@ -4,7 +4,7 @@
     "edate": "2012-08-01 11:00:00",
     "latitude": 43.61,
     "longitude": 3.87,
-	"meteo": "meteo.input",
+    "meteo": "meteo.input",
     "elevation": 44.0,
     "tzone": "Europe/Paris",
     "output_index": "",
@@ -22,11 +22,7 @@
   "mtg_api": {
     "collar_label": "inT",
     "leaf_lbl_prefix": "L",
-    "stem_lbl_prefix": [
-      "in",
-      "Pet",
-      "cx"
-    ]
+    "stem_lbl_prefix": ["in", "Pet", "cx"]
   },
   "numerical_resolution": {
     "max_iter": 100,
@@ -40,30 +36,14 @@
     "E_type2": "Eabs",
     "opt_prop": {
       "SW": {
-        "leaf": [
-          0.06,
-          0.07
-        ],
-        "stem": [
-          0.13
-        ],
-        "other": [
-          0.06,
-          0.07
-        ]
+        "leaf": [0.06, 0.07],
+        "stem": [0.13],
+        "other": [0.06, 0.07]
       },
       "LW": {
-        "leaf": [
-          0.04,
-          0.07
-        ],
-        "stem": [
-          0.13
-        ],
-        "other": [
-          0.06,
-          0.07
-        ]
+        "leaf": [0.04, 0.07],
+        "stem": [0.13],
+        "other": [0.06, 0.07]
       }
     },
     "scene_rotation": 0.0,
@@ -116,22 +96,8 @@
       "Kc25": 404.9,
       "Ko25": 278.4,
       "Tx25": 42.75,
-      "alpha": [
-        0.2,
-        0.2,
-        0.19,
-        0.19,
-        0.14,
-        0.12
-      ],
-      "alpha_T_limit": [
-        15,
-        20,
-        25,
-        30,
-        34,
-        50
-      ],
+      "alpha": [0.2, 0.2, 0.19, 0.19, 0.14, 0.12],
+      "alpha_T_limit": [15, 20, 25, 30, 34, 50],
       "a1": 0.98,
       "a2": 0.98,
       "a3": 0.98,
@@ -144,7 +110,7 @@
       },
       "RespT_Ko": {
         "model": "Arrhenius",
-        "c": 20.30,
+        "c": 20.3,
         "deltaHa": 36.38
       },
       "RespT_Vcm": {
@@ -174,43 +140,18 @@
       }
     },
     "par_photo_N": {
-      "Vcm25_N": [
-        34.02,
-        -3.13
-      ],
-      "Jm25_N": [
-        78.27,
-        -17.3
-      ],
-      "Rd_N": [
-        0.42,
-        -0.01
-      ],
-      "TPU25_N": [
-        6.24,
-        -1.92
-      ]
+      "Vcm25_N": [34.02, -3.13],
+      "Jm25_N": [78.27, -17.3],
+      "Rd_N": [0.42, -0.01],
+      "TPU25_N": [6.24, -1.92]
     }
   },
   "soil": {
     "soil_class": "Sand",
-    "soil_dimensions": [
-      3.6,
-      1.0,
-      1.2
-    ],
+    "soil_dimensions": [3.6, 1.0, 1.2],
     "rhyzo_solution": true,
-    "rhyzo_radii": [
-      0.167,
-      0.333,
-      0.5
-    ],
+    "rhyzo_radii": [0.167, 0.333, 0.5],
     "rhyzo_coeff": 0.5,
-    "roots": [
-      0.013,
-      0.0001
-    ]
+    "roots": [0.013, 0.0001]
   }
 }
-
-

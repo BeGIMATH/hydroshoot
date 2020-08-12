@@ -173,10 +173,10 @@ def irradiance_distribution(meteo, geo_location, irradiance_unit,
     for idate, date in enumerate(meteo.index):
 
         if irradiance_unit.split('_')[0] == 'PPFD':
-            energy = meteo.ix[date].PPFD
+            energy = meteo.loc[date].PPFD
         else:
             try:
-                energy = meteo.ix[date].Rg
+                energy = meteo.loc[date].Rg
             except:
                 raise TypeError(
                     "'irradiance_unit' must be one of the following 'Rg_Watt/m2', 'RgPAR_Watt/m2' or'PPFD_umol/m2/s'.")
@@ -213,15 +213,17 @@ def irradiance_distribution(meteo, geo_location, irradiance_unit,
             direction = [idirect[0] for idirect in direction]
             direction = map(lambda x: tuple(list(x[:2]) + [-x[2]]), direction)
 
-        sky = zip(len(direction) * [irradiance_diff / len(direction)], direction)
-
+        
         # direct irradiance
         sun = Gensun.Gensun()(Rsun=irradiance_dir, DOY=doy_utc, heureTU=hour_utc, lat=latitude)
         sun = GetLightsSun.GetLightsSun(sun)
         sun_data = [(float(sun.split()[0]), (float(sun.split()[1]), float(sun.split()[2]), float(sun.split()[3])))]
 
         # diffuse irradiance (distributed over a dome) + direct irradiance (localized as point source(s))
-        source = sky.__add__(sun_data)
+        #sky = zip(len(direction) * [irradiance_diff / len(direction)], direction)
+        source = zip(len(direction) * [irradiance_diff / len(direction)], direction,sun_data)
+
+        #source = zip(set(sky),sun_data)
         source = [list(isource) for isource in source]
 
         try:

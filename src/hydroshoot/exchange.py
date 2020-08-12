@@ -100,7 +100,7 @@ def par_25_N_dict(Vcm25_N=(34.02, -3.13), Jm25_N=(78.27, -17.3),
 
 def leaf_Na(age_gdd, ppfd_10, a_n=-0.0008, b_n=3.3, a_m=6.471, b_m=56.635):
     """Computes Nitrogen content per unit leaf area.
-
+    
     Args:
         age_gdd (float): [°Cd] leaf age given in cumulative degree-days temperature since budburst
         ppfd_10 (float): [umol m-2 s-1] cumulative intercepted irradiance (PPFD) over the 10 days prior to simulation
@@ -127,8 +127,11 @@ def leaf_Na(age_gdd, ppfd_10, a_n=-0.0008, b_n=3.3, a_m=6.471, b_m=56.635):
         Deflaut parameters' values are given for Syrah from experiments in Montpellier (France).
 
     """
-
-    leaf_mass_per_area = a_m * log(max(1.e-3, ppfd_10)) + b_m
+    if ppfd_10 != None:
+        leaf_mass_per_area = a_m * log(max(1.e-3, ppfd_10)) + b_m
+    else:
+        leaf_mass_per_area = 0    
+    
     nitrogen_content_per_leaf_mass = a_n * age_gdd + b_n
     nitrogen_content_per_leaf_area = leaf_mass_per_area * nitrogen_content_per_leaf_mass / 100.
 

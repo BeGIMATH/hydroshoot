@@ -7,7 +7,12 @@ Energy balance module of HydroShoot.
 This module computes leaf (and eventually other elements) tempertaure of a
 given plant shoot.
 """
+from __future__ import division
+from __future__ import print_function
 
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 import time
 from math import pi
 from scipy import optimize, mean
@@ -57,7 +62,7 @@ def get_leaves_length(g, leaf_lbl_prefix='L', length_lbl='Length', unit_scene_le
     conv = {'mm': 1.e-3, 'cm': 1.e-2, 'm': 1.}[unit_scene_length]
     leaves = get_leaves(g, leaf_lbl_prefix)
     length = g.property(length_lbl)
-    return {k: v * conv for k, v in length.iteritems() if k in leaves}
+    return {k: v * conv for k, v in length.items() if k in leaves}
 
 
 def form_factors_simplified(g, pattern=None, infinite=False, leaf_lbl_prefix='L', turtle_sectors='46',
@@ -99,15 +104,15 @@ def form_factors_simplified(g, pattern=None, infinite=False, leaf_lbl_prefix='L'
         energy, emission, direction, elevation, azimuth = turtle.turtle(sectors=turtle_sectors, format='uoc', energy=1.)
     else:
         vert, fac = ico.turtle_dome(icosphere_level)
-        direction = ico.sample_faces(vert, fac, iter=None, spheric=False).values()
+        direction = list(ico.sample_faces(vert, fac, iter=None, spheric=False).values())
         direction = [i[0] for i in direction]
-        direction = map(lambda x: tuple(list(x[:2]) + [-x[2]]), direction)
+        direction = [tuple(list(x[:2]) + [-x[2]]) for x in direction]
 
-    caribu_source = zip(len(direction) * [1. / len(direction)], direction)
+    caribu_source = list(zip(len(direction) * [1. / len(direction)], direction))
     k_soil, k_sky, k_leaves = {}, {}, {}
 
     for s in ('pirouette', 'cacahuete'):
-        print '... %s' % s
+        print('... %s' % s)
         if s == 'pirouette':
             scene = pgl_scene(g, flip=True)
         else:
@@ -123,11 +128,11 @@ def form_factors_simplified(g, pattern=None, infinite=False, leaf_lbl_prefix='L'
         if s == 'pirouette':
             k_soil_dict = aggregated['Ei']
             max_k_soil = float(max(k_soil_dict.values()))
-            k_soil = {vid: k_soil_dict[vid] / max_k_soil for vid in k_soil_dict}
+            k_soil = {vid: old_div(k_soil_dict[vid], max_k_soil) for vid in k_soil_dict}
         elif s == 'cacahuete':
             k_sky_dict = aggregated['Ei']
             max_k_sky = float(max(k_sky_dict.values()))
-            k_sky = {vid: k_sky_dict[vid] / max_k_sky for vid in k_sky_dict}
+            k_sky = {vid: old_div(k_sky_dict[vid], max_k_sky) for vid in k_sky_dict}
 
     for vid in aggregated['Ei']:
         k_leaves[vid] = max(0., 2. - (k_soil[vid] + k_sky[vid]))
@@ -187,7 +192,7 @@ def _gbH(leaf_length, wind_speed):
 
     """
     l_w = leaf_length * 0.72  # leaf length in the downwind direction [m]
-    d_bl = 4. * (l_w / max(1.e-3, wind_speed)) ** 0.5 / 1000.  # Boundary layer thickness in [m] (Nobel, 2009 pp.337)
+    d_bl = 4. * (old_div(l_w, max(1.e-3, wind_speed))) ** 0.5 / 1000.  # Boundary layer thickness in [m] (Nobel, 2009 pp.337)
     return 2. * 0.026 / d_bl  # Boundary layer conductance to heat [W m-2 K-1]
 
 
@@ -284,7 +289,7 @@ def leaf_temperature(g, meteo, t_soil, t_sky_eff, t_init=None, form_factors=None
             t_dict = {}
 
             for vid in leaves:
-                shortwave_inc = properties['ei'][vid] / (0.48 * 4.6)  # Ei not Eabs
+                shortwave_inc = old_div(properties['ei'][vid], (0.48 * 4.6))  # Ei not Eabs
 
                 ff_sky = properties['k_sky'][vid]
                 ff_leaves = properties['k_leaves'][vid]
@@ -334,7 +339,7 @@ def leaf_temperature(g, meteo, t_soil, t_sky_eff, t_init=None, form_factors=None
                     pass
 
                 t_next = {}
-                for vtx_id in t_new.keys():
+                for vtx_id in list(t_new.keys()):
                     tx = t_prev[vtx_id] + it_step * (t_new[vtx_id] - t_prev[vtx_id])
                     t_next[vtx_id] = tx
 
@@ -349,7 +354,7 @@ def leaf_temperature(g, meteo, t_soil, t_sky_eff, t_init=None, form_factors=None
         eq_lst = []
         t_leaf_lst = []
         for vid in leaves:
-            shortwave_inc = properties['ei'][vid] / (0.48 * 4.6)  # Ei not Eabs
+            shortwave_inc = old_div(properties['ei'][vid], (0.48 * 4.6))  # Ei not Eabs
             ff_sky = properties['k_sky'][vid]
             ff_leaves = properties['k_leaves'][vid]
 
@@ -408,9 +413,9 @@ def soil_temperature(g, meteo, temp_sky_eff, soil_label_prefix='other'):
     temp_sky_eff = utils.celsius_to_kelvin(temp_sky_eff)
 
     soil_nodes = [g.node(vid) for vid in g.property('geometry') if g.node(vid).label.startswith(soil_label_prefix)][0]
-    temp_leaves = utils.celsius_to_kelvin(mean(g.property('Tlc').values()))
+    temp_leaves = utils.celsius_to_kelvin(mean(list(g.property('Tlc').values())))
 
-    shortwave_inc = soil_nodes.Ei / (0.48 * 4.6)  # Ei not Eabs
+    shortwave_inc = old_div(soil_nodes.Ei, (0.48 * 4.6))  # Ei not Eabs
     temp_soil = soil_nodes.Tsoil if 'Tsoil' in soil_nodes.properties() else temp_air
 
     def _SoilEnergyX(temp_soil):
@@ -418,8 +423,8 @@ def soil_temperature(g, meteo, temp_sky_eff, soil_label_prefix='other'):
         longwave_net = e_soil * sigma * (1. * e_sky * temp_sky_eff ** 4 +
                                          1. * e_leaf * temp_leaves ** 4 -
                                          temp_soil ** 4)
-        latent_heat = -lambda_ * 0.06 * utils.vapor_pressure_deficit(temp_air, temp_soil,
-                                                                     relative_humidity) / atm_pressure  # 0.06 is gM from Bailey 2016 AFM 218-219:146-160
+        latent_heat = old_div(-lambda_ * 0.06 * utils.vapor_pressure_deficit(temp_air, temp_soil,
+                                                                     relative_humidity), atm_pressure)  # 0.06 is gM from Bailey 2016 AFM 218-219:146-160
         sensible_heat = -0.5 * Cp * utils.celsius_to_kelvin(
             temp_soil - temp_air)  # 0.5 is gH from Bailey 2016 AFM 218-219:146-160
         energy_balance = shortwave_abs + longwave_net + latent_heat + sensible_heat
